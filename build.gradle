@@ -1,0 +1,75 @@
+plugins {
+	id 'java'
+	id 'application'
+	id 'org.springframework.boot' version '3.0.6'
+	id 'io.spring.dependency-management' version '1.1.0'
+	id 'com.google.cloud.tools.jib' version '3.3.1'
+}
+
+group = 'ua.lviv.javaclub'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+bootBuildImage {
+    imageName = "docker-image-demo-v4"
+}
+
+jib {
+  from {
+    image = 'openjdk:17.0.1-jdk-slim'
+  }
+  to {
+    image = 'docker-image-demo-v5'
+    tags = ['v5', 'latest']
+  }
+}
+
+//application {
+//    mainClass.set('ua.lviv.javaclub.dockerimage.DockerImageApplication')
+//}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+	
+	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+	
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	
+	testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation "org.testcontainers:mysql"
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+tasks.register('downloadDependencies') {
+    doLast {
+        configurations.findAll { it.canBeResolved }.each { it.resolve() }
+    }
+}

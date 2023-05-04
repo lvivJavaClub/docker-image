@@ -1,0 +1,12 @@
+FROM ubuntu:23.04
+
+RUN apt update && \
+    apt upgrade -y && \
+    apt install -y openjdk-17-jdk && \
+    apt update && \
+    apt clean
+    
+EXPOSE 8080
+RUN mkdir /app
+COPY build/libs/DockerImage-0.0.1-SNAPSHOT.jar /app/spring-boot-application.jar
+ENTRYPOINT ["java", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseCGroupMemoryLimitForHeap", "-Djava.security.egd=file:/dev/./urandom","-jar","/app/spring-boot-application.jar"]

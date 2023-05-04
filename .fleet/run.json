@@ -1,0 +1,85 @@
+{
+    "configurations": [
+        {
+            "name": "Start application dependency",
+            "type": "docker-compose-up",
+            "files": ["src/main/docker/docker-compose.yml"],
+        },
+        {
+            "name": "Gradle: Build (without test)",
+            "type": "gradle",
+            "tasks": ["clean", "build"],
+            "args": ["-x", "test"],
+        },
+        {
+            "name": "Gradle: Run tests",
+            "type": "gradle",
+            "tasks": ["test"],
+        },
+        {
+            "type": "gradle",
+            "name": "Gradle: Run App",
+            "tasks": ["bootRun"],
+        },
+        {
+            "name": "Application: Get list of users",
+            "type": "command",
+            "program": "curl",
+            "args": ["http://localhost:8080/users"]
+        },
+        {
+            "name": "Application: Get user by ID 1",
+            "type": "command",
+            "program": "curl",
+            "args": ["http://localhost:8080/users/1"]
+        },
+        {
+            "name": "Application: Get user by ID 2",
+            "type": "command",
+            "program": "curl",
+            "args": ["http://localhost:8080/users/2"]
+        },
+        {
+            "name": "Docker build image with copy jar file (v0)",
+            "type": "docker-build",
+            "file": "src/main/docker/Dockerfile.v0",
+            "buildOptions": "-t docker-image-demo-v0:v0 -t docker-image-demo-v0:latest",
+            "dependsOn": ["Gradle: Build (without test)"],
+        },
+        {
+            "name": "Docker build image with copy jar file (v1)",
+            "type": "docker-build",
+            "file": "src/main/docker/Dockerfile.v1",
+            "buildOptions": "-t docker-image-demo-v1:v1 -t docker-image-demo-v1:latest",
+            "dependsOn": ["Gradle: Build (without test)"],
+        },
+        {
+            "name": "Docker build image with build jar in docker (v2)",
+            "type": "docker-build",
+            "file": "src/main/docker/Dockerfile.v2",
+            "buildOptions": "-t docker-image-demo-v2:v2 -t docker-image-demo-v2:latest",
+        },
+        {
+            "name": "Docker build image with build jar in docker (v3)",
+            "type": "docker-build",
+            "file": "src/main/docker/Dockerfile.v3",
+            "buildOptions": "-t docker-image-demo-v3:v3 -t docker-image-demo-v3:latest",
+        },
+        {
+            "name": "Docker build image with build jar in docker (v4) SpringBoot",
+            "type": "gradle",
+            "tasks": ["bootBuildImage"],
+        },
+        {
+            "name": "Docker build image with build jar in docker (v5) JIB",
+            "type": "gradle",
+            "tasks": ["jibDockerBuild"],
+        },
+        {
+            "name": "java layertools",
+            "type": "command",
+            "program": "java",
+            "args": [ "-Djarmode=layertools", "-jar", "build/libs/DockerImage-0.0.1-SNAPSHOT.jar",  "extract"],
+        }
+    ]
+}

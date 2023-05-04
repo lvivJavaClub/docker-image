@@ -1,0 +1,14 @@
+FROM gradle:7.6.1-jdk17-alpine AS build-with-dependencies
+WORKDIR /home/gradle/src
+COPY --chown=gradle:gradle gradle.properties build.gradle settings.gradle /home/gradle/src/
+RUN gradle downloadDependencies --no-daemon > /dev/null 2>&1 || true
+
+FROM build-with-dependencies AS build
+COPY --chown=gradle:gradle . /home/gradle/src
+RUN gradle build --no-daemon -x test
+
+FROM openjdk:17.0.1-jdk-slim
+EXPOSE 8080
+RUN mkdir /app
+COPY --from=build /home/gradle/src/build/libs/DockerImage-0.0.1-SNAPSHOT.jar /app/spring-boot-application.jar
+ENTRYPOINT ["java", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseCGroupMemoryLimitForHeap", "-Djava.security.egd=file:/dev/./urandom","-jar","/app/spring-boot-application.jar"]
