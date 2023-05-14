@@ -34,10 +34,6 @@ jib {
   }
 }
 
-//application {
-//    mainClass.set('ua.lviv.javaclub.dockerimage.DockerImageApplication')
-//}
-
 dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

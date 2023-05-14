@@ -25,7 +25,7 @@ public class UserService {
     @PostConstruct
     @Transactional
     public void init() {
-        for(int i = 0; i < 8; i++) {
+        for(int i = 0; i < 10; i++) {
             var userEntity = UserEntity.builder().name(UUID.randomUUID().toString()).build();
             userRepository.save(userEntity);
         }

@@ -6,6 +6,11 @@
             "files": ["src/main/docker/docker-compose.yml"],
         },
         {
+            "name": "Gradle: Build clean",
+            "type": "gradle",
+            "tasks": ["clean"],
+        },
+        {
             "name": "Gradle: Build (without test)",
             "type": "gradle",
             "tasks": ["clean", "build"],
@@ -76,10 +81,18 @@
             "tasks": ["jibDockerBuild"],
         },
         {
-            "name": "java layertools",
+            "name": "List java layertools",
             "type": "command",
             "program": "java",
-            "args": [ "-Djarmode=layertools", "-jar", "build/libs/DockerImage-0.0.1-SNAPSHOT.jar",  "extract"],
-        }
+            "workingDir": "build/libs/",
+            "args": [ "-Djarmode=layertools", "-jar", "DockerImage-0.0.1-SNAPSHOT.jar",  "list"],
+        },
+        {
+            "name": "Extract java layertools",
+            "type": "command",
+            "program": "java",
+            "workingDir": "build/libs/",
+            "args": [ "-Djarmode=layertools", "-jar", "DockerImage-0.0.1-SNAPSHOT.jar",  "extract"],
+        },
     ]
 }
